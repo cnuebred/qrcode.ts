@@ -166,7 +166,6 @@ export class QRcode extends ReedSolomonData {
         const kernel = '01010'
         const upper = [border, padding, kernel, padding, border]
             .map(row => { return row.split('') })
-        console.log(this.alignments)
         const [first, last] = [this.alignments[0], this.alignments[this.alignments.length - 1]]
         this.alignments.forEach(column => {
             this.alignments.forEach(row => {
@@ -213,7 +212,6 @@ export class QRcode extends ReedSolomonData {
         }
         const bits = this.bits.split('')
         const bitsLength = bits.length
-        console.log(bitsLength)
         const tryLimit = () => {
             if (cords.y < 0) {
                 ++cords.y; --cords.x; cords.x--
@@ -267,7 +265,6 @@ export class QRcode extends ReedSolomonData {
             const lim = cords.direction ? up() : down()
             if (lim) flip++
         }
-        console.log(cords.x, cords.y, flip)
     }
     buildMarginVertical = () => {
         const margin = '1'.repeat(this.size).split('').map(item => { return parseInt(item) as (0 | 1 | "-" | ".") })
