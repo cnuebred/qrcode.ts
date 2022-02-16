@@ -21,9 +21,9 @@ Currently available static options are mask '100' in byte coding.
 // sample usage
 const app = () => {
     new QRcode("https://youtu.be/dQw4w9WgXcQ").render();
-};
+}
 ```
-
+![qr code with rick](https://imgur.com/i9ot2QTm.png)
 ```ts
 // sample usage
 const app = () => {
@@ -32,15 +32,31 @@ const app = () => {
     minVersion: 2,
   };
   new QRcode("Hello world", options).render();
-};
+}
 ```
+![qr code with hello world](https://imgur.com/GAzdx5om.png)
 
 ```ts
 // sample usage
 const app = () => {
-    const options = {
-        minErrorLevel: "L",
+  const options = {
+    minErrorLevel: "L",
         minVersion: 3,
     };
     new QRcode("Hello Cube", options).render();
-};
+}
+```
+![qr code with hello world](https://imgur.com/GAzdx5om.png)
+
+```ts
+// sample usage
+const app = async () => {
+    const data = {
+        time: Date.now(),
+        message: 'Hello world',
+        next: await randomBytes(16).toString('hex')
+    }
+    new QRcode(JSON.stringify(data), { minErrorLevel: 'M' }).render()
+}
+```
+![qr code with hello world](https://imgur.com/gIC7Ewtm.png)
