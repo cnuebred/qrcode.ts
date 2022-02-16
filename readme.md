@@ -46,7 +46,7 @@ const app = () => {
     new QRcode("Hello Cube", options).render();
 }
 ```
-![qr code with hello world](https://imgur.com/GAzdx5om.png)
+![qr code with hello cube](https://imgur.com/pdhR54fm.png)
 
 ```ts
 // sample usage
@@ -59,4 +59,4 @@ const app = async () => {
     new QRcode(JSON.stringify(data), { minErrorLevel: 'M' }).render()
 }
 ```
-![qr code with hello world](https://imgur.com/gIC7Ewtm.png)
+![qr code with data](https://imgur.com/gIC7Ewtm.png)
