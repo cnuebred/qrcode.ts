@@ -18,8 +18,8 @@ class ReedSolomonData {
     constructor(data: string, options?: ReedSolomonOptions) {
         this.data = data
         this.options = {
-            minErrorLevel: options?.minErrorLevel || 'H',
-            minVersion: options?.minVersion || 2
+            minVersion: options?.minVersion || 2,
+            minErrorLevel: options?.minErrorLevel || 'H'
         }
         this.getVersionAndErrorLevel()
         this.generateDataBits()
@@ -123,6 +123,9 @@ export class QRcode extends ReedSolomonData {
         super(data, options)
         this.size = getVersionSize(this.version)
         this.alignments = getAlignmentColumnsAndRows(this.version)
+        this.resetPolygon()
+    }
+    private resetPolygon = () => {
         this.polygon = [...Array(this.size)].map(() => {
             return [...Array(this.size).fill('-')]
         })
@@ -273,7 +276,8 @@ export class QRcode extends ReedSolomonData {
             this.polygon.push(JSON.parse(JSON.stringify(margin)))
         }
     }
-    render = () => {
+    private renderData = () => {
+        this.resetPolygon()
         this.generateFinder()
         this.generateTiming()
         this.generateAlignment()
@@ -281,17 +285,39 @@ export class QRcode extends ReedSolomonData {
         this.generateFormatString()
         if (this.version >= 7) this.generateVersionString()
         this.insertData()
-
-
         this.buildMarginVertical()
+    }
+    renderSvg = (pixelSize = 5, color: { light: string, dark: string } = { light: '#ffffff', dark: '#000000' }) => {
+        this.renderData()
+        const create_polygon = (width: number, height: number) => {
+            const svg_polygon = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">CONTENT</svg>`
+            return svg_polygon
+        }
+        const create_rect = (x: number, y: number, a: number, color = '#000000') => {
+            const rect = `<rect x="${x}" y="${y}" width="${a}" height="${a}" fill="${color}"></rect>`
+            return rect
+        }
+        const create_qr_svg = (qr_data: string, block_size: number) => {
+            const a = Math.floor(Math.sqrt(qr_data.length))
+            const polygon = create_polygon(a * block_size, a * block_size)
+            let rects = ''
+            for (let h = 0; h < a; h++)
+                for (let w = 0; w < a; w++) {
+                    const rect = create_rect(w * block_size, h * block_size, block_size, qr_data[w + h * a] == '1' ? color.light : color.dark)
+                    rects += rect
 
+                }
+            return polygon.replace('CONTENT', rects)
+        }
+        let qr_data = ''
         this.polygon.forEach(item => {
             item.unshift(1, 1, 1)
             item.push(1, 1, 1)
-            console.log(item.join('').replaceAll('-', '--').replaceAll('0', '\x1b[40m\x1b[30m██\x1b[0m').replaceAll('1', '\x1b[37m██\x1b[0m'))
+            qr_data += item.join('')
         })
-        console.log('Version: ', this.version)
-        console.log("ErrorLevel: ", this.errorLevel)
-        console.log("Size: ", this.size)
+        return { svg: create_qr_svg(qr_data, pixelSize), version: this.version, errorLevel: this.errorLevel, size: this.size }
+    }
+    render = () => {
+        return this.renderData()
     }
 }
