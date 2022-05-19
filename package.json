@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch src --ext ts,json --exec npx ts-node -T ./src/main.ts"
+    "dev": "nodemon --watch src --ext ts,json --exec npx ts-node -T ./src/main.ts",
+    "build": "npx tsc"
   },
   "author": "Jonatan (cube)",
   "license": "ISC",
