@@ -1,6 +1,6 @@
 // Galois Field
 
-import { BASE_POLYNOMIAL, MODULO_BYTE_WISE, Polynomial } from "./d"
+import { BASE_POLYNOMIAL, MODULO_BYTE_WISE, Polynomial } from "./utils"
 
 const exponentGalois = (exponent: number, base = 2) => {
     if (exponent >= 255) while (exponent > 255) exponent = exponent % 255

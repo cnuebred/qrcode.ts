@@ -1,4 +1,4 @@
-import { ALIGNMENT_LOCATION_BASE, BASE_SIZE, LENGTH_BITS, TABLE_EC, VERSION_FORMAT_POLYNOMIAL } from "./d"
+import { ALIGNMENT_LOCATION_BASE, BASE_SIZE, LENGTH_BITS, TABLE_EC, VERSION_FORMAT_POLYNOMIAL } from "./utils"
 
 const capacity = (totalBits) => {
     return {
