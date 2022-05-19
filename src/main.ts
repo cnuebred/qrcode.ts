@@ -8,11 +8,9 @@ const app = async () => {
         next: randomBytes(16).toString('hex')
     }
     new QRcode(JSON.stringify(data), { minErrorLevel: 'M' }).render()
+    const svg = new QRcode(JSON.stringify(data), { minErrorLevel: 'M' }).renderSvg()
+    console.log(svg)
 }
 
 
 app()
-
-
-
-
