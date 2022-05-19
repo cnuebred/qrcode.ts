@@ -3,7 +3,7 @@ import { getDivPolynomial } from "./polynomial"
 import { addPaddingWithoutPrefix, getAlignmentColumnsAndRows, getArrayBinaryPolynomial, getBinaryMessageData, getErrorCorrectionLevelData, getFromBinaryMessage, getLengthBits, getVersionSize, maskCondition, totalCapacity } from "./qr_code_utils"
 
 
-class ReedSolomonData {
+export class ReedSolomonData {
     data: string
     codewords = ''
     formatString = ''
@@ -318,6 +318,6 @@ export class QRcode extends ReedSolomonData {
         return { svg: create_qr_svg(qr_data, pixelSize), version: this.version, errorLevel: this.errorLevel, size: this.size }
     }
     render = () => {
-        return this.renderData()
+        return { data: this.polygon, version: this.version, errorLevel: this.errorLevel, size: this.size }
     }
 }

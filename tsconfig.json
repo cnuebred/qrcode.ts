@@ -5,6 +5,7 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "experimentalDecorators": true,
+        "declaration": true,
         "moduleResolution": "node",
         "outDir": "./build",
         "rootDir": "./src"
