@@ -1,17 +1,17 @@
 {
   "name": "seqrity",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "build/index.js",
-  "types": "build/*.d.ts",
+  "types": "build/index.d.ts",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch src --ext ts,json --exec npx ts-node -T ./src/main.ts",
     "build": "npx tsc"
   },
-  "files": [
-    "build"
-  ],
   "author": "cnuebred",
   "repository": {
     "type": "git",
