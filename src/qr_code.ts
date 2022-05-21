@@ -123,14 +123,14 @@ export class QRcode extends ReedSolomonData {
         super(data, options)
         this.size = getVersionSize(this.version)
         this.alignments = getAlignmentColumnsAndRows(this.version)
-        this.resetPolygon()
+        this.renderData()
     }
     private resetPolygon = () => {
         this.polygon = [...Array(this.size)].map(() => {
             return [...Array(this.size).fill('-')]
         })
     }
-    put = (items: (string | number)[][], cords: number[], reverse = false) => {
+    private put = (items: (string | number)[][], cords: number[], reverse = false) => {
         items.forEach((item: string[], index) => {
             item.forEach((item, indexItem) => {
                 if (reverse)
@@ -139,7 +139,7 @@ export class QRcode extends ReedSolomonData {
             })
         })
     }
-    generateFinder = () => {
+    private generateFinder = () => {
         const border = '0000000'
         const padding = '0111110'
         const kernel = '0100010'
@@ -158,12 +158,12 @@ export class QRcode extends ReedSolomonData {
 
         })
     }
-    generateTiming = () => {
+    private generateTiming = () => {
         const bar = '01'.repeat(((this.size - (FINDER_SIZE * 2)) / 2) + 2) // dragons were here 
         this.put([bar.split('')], [6, 6])
         this.put(bar.split('').map(item => { return [item] }), [6, 6])
     }
-    generateAlignment = () => {
+    private generateAlignment = () => {
         const border = '0'.repeat(5)
         const padding = '01110'
         const kernel = '01010'
@@ -180,10 +180,10 @@ export class QRcode extends ReedSolomonData {
             })
         })
     }
-    generateDarkModule = () => {
+    private generateDarkModule = () => {
         this.put([[0]], [this.size - 8, 8])
     }
-    generateFormatString = () => {
+    private generateFormatString = () => {
         let formatString = this.createFormatString().split('')
             .map(item => { return item == '1' ? '0' : '1' })
         this.put([formatString.slice(0, 6)], [8, 0]) // horizontal
@@ -195,7 +195,7 @@ export class QRcode extends ReedSolomonData {
         this.put([formatString.slice(6, 8)], [7, 8], true) // vertical
         this.put([formatString.slice(7)], [this.size - 8, 8], true) // vertical
     }
-    generateVersionString = () => {
+    private generateVersionString = () => {
         const versionString = this.createVersionString().split('')
             .map(item => { return item == '1' ? '0' : '1' })
 
@@ -205,7 +205,7 @@ export class QRcode extends ReedSolomonData {
         this.put(area, [0, this.size - 8 - 3])
         this.put(area, [this.size - 8 - 3, 0], true)
     }
-    insertData = () => {
+    private insertData = () => {
         const cords = {
             x: this.size - 1,
             y: this.size - 1,
@@ -269,7 +269,7 @@ export class QRcode extends ReedSolomonData {
             if (lim) flip++
         }
     }
-    buildMarginVertical = () => {
+    private buildMarginVertical = () => {
         const margin = '1'.repeat(this.size).split('').map(item => { return parseInt(item) as (0 | 1 | "-" | ".") })
         for (let i = 0; i < 3; i++) {
             this.polygon.unshift(JSON.parse(JSON.stringify(margin)))
@@ -278,17 +278,16 @@ export class QRcode extends ReedSolomonData {
     }
     private renderData = () => {
         this.resetPolygon()
-        this.generateFinder()
-        this.generateTiming()
-        this.generateAlignment()
-        this.generateDarkModule()
-        this.generateFormatString()
-        if (this.version >= 7) this.generateVersionString()
-        this.insertData()
+        this.generateFinder() // no depends
+        this.generateTiming() // size 
+        this.generateAlignment() // no depends
+        this.generateDarkModule() // no depends
+        this.generateFormatString() // fully depends
+        if (this.version >= 7) this.generateVersionString() // fully depends
+        this.insertData()// fully depends
         this.buildMarginVertical()
     }
     renderSvg = (pixelSize = 5, color: { light: string, dark: string } = { light: '#ffffff', dark: '#000000' }) => {
-        this.renderData()
         const create_polygon = (width: number, height: number) => {
             const svg_polygon = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">CONTENT</svg>`
             return svg_polygon
@@ -317,7 +316,14 @@ export class QRcode extends ReedSolomonData {
         })
         return { svg: create_qr_svg(qr_data, pixelSize), version: this.version, errorLevel: this.errorLevel, size: this.size }
     }
+
     render = () => {
-        return { data: this.polygon, version: this.version, errorLevel: this.errorLevel, size: this.size }
+        let polygon = ''
+        this.polygon.forEach(item => {
+            item.unshift(1, 1, 1)
+            item.push(1, 1, 1)
+            polygon += item.join('')
+        })
+        return { data: polygon, version: this.version, errorLevel: this.errorLevel, size: this.size }
     }
 }
