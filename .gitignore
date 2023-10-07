@@ -3,3 +3,4 @@
 /build
 package-lock.json
 /src/main.ts
+index.html

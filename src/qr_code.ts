@@ -277,17 +277,45 @@ export class QRcode extends ReedSolomonData {
         }
     }
     private renderData = () => {
+        console.log()
+        const start = performance.now()
+        let part = performance.now()
         this.resetPolygon()
+        console.log('reset_polygon', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         this.generateFinder() // no depends
+        console.log('finders', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         this.generateTiming() // size 
+        console.log('timing', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         this.generateAlignment() // no depends
+        console.log('alignment', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         this.generateDarkModule() // no depends
+        console.log('dark_module', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         this.generateFormatString() // fully depends
+        console.log('format_string', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         if (this.version >= 7) this.generateVersionString() // fully depends
+        console.log('version_string', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         this.insertData()// fully depends
+        console.log('insert_data', performance.now() - start, performance.now() - part)
+        part = performance.now()
+
         this.buildMarginVertical()
+        console.log('margin_vertical', performance.now() - start, performance.now() - part)
     }
-    renderSvg = (pixelSize = 5, color: { light: string, dark: string } = { light: '#ffffff', dark: '#000000' }) => {
+    private createSvg = () => {
         const create_polygon = (width: number, height: number) => {
             const svg_polygon = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">CONTENT</svg>`
             return svg_polygon
@@ -296,7 +324,7 @@ export class QRcode extends ReedSolomonData {
             const rect = `<rect x="${x}" y="${y}" width="${a}" height="${a}" fill="${color}"></rect>`
             return rect
         }
-        const create_qr_svg = (qr_data: string, block_size: number) => {
+        const create_qr_svg = (qr_data: string, block_size: number, color) => {
             const a = Math.floor(Math.sqrt(qr_data.length))
             const polygon = create_polygon(a * block_size, a * block_size)
             let rects = ''
@@ -308,13 +336,21 @@ export class QRcode extends ReedSolomonData {
                 }
             return polygon.replace('CONTENT', rects)
         }
+        return create_qr_svg
+    }
+    renderSvg = (pixelSize = 5, color: { light: string, dark: string } = { light: '#ffffff', dark: '#000000' }) => {
         let qr_data = ''
         this.polygon.forEach(item => {
             item.unshift(1, 1, 1)
             item.push(1, 1, 1)
             qr_data += item.join('')
         })
-        return { svg: create_qr_svg(qr_data, pixelSize), version: this.version, errorLevel: this.errorLevel, size: this.size }
+        const creator = this.createSvg()
+        return { svg: creator(qr_data, pixelSize, color), version: this.version, errorLevel: this.errorLevel, size: this.size }
+    }
+    renderSvgBin = (bin, pixelSize = 5, color: { light: string, dark: string } = { light: '#ffffff', dark: '#000000' }) => {
+        const creator = this.createSvg()
+        return creator(bin, pixelSize, color)
     }
 
     render = () => {
